@@ -53,7 +53,7 @@ module PostgresCopy
         if options[:format] == :binary
           columns_list = options[:columns] || []
         elsif options[:header]
-          line = io.gets
+          line = io.gets(options[:row_sep])
           columns_list = options[:columns] || line.strip.split(options[:delimiter])
         else
           columns_list = options[:columns]
@@ -79,13 +79,14 @@ module PostgresCopy
           end
         else
           while line = io.gets(options[:row_sep]) do
+            line.chomp!(options[:row_sep])
             next if line.strip.size == 0
             if block_given?
               row = line.strip.split(options[:delimiter])
               yield(row)
-              line = row.join(options[:delimiter]) + "\n"
+              line = row.join(options[:delimiter])
             end
-            connection.raw_connection.put_copy_data line
+            connection.raw_connection.put_copy_data line + "\n"
           end
         end
         connection.raw_connection.put_copy_end

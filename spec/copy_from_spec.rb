@@ -78,6 +78,11 @@ describe "COPY FROM" do
     TestModel.order(:id).map{|r| r.attributes}.should == [{'id' => 1, 'data' => 'test data 1'}]
   end
 
+  it "should use the specified row separator" do
+    TestModel.copy_from(File.open(File.expand_path('spec/fixtures/comma_with_crlf.csv'), 'r:ASCII-8BIT'), :row_sep => "\r\n")
+    TestModel.order(:id).first.attributes.should == {'id' => 1, 'data' => 'test data 1'}
+  end
+
   #we should implement this later
   #it "should raise error in malformed files" do
     #lambda do
