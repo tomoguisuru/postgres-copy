@@ -82,8 +82,8 @@ module PostgresCopy
             line.chomp!(options[:row_sep])
             next if line.strip.size == 0
             if block_given?
-              next if row.all?(&:nil?)
               row = line.strip.split(options[:delimiter])
+              next if row.blank?
               yield(row)
               line = row.join(options[:delimiter])
             end
